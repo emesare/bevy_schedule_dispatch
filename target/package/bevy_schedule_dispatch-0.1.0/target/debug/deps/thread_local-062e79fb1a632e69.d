@@ -1,0 +1,10 @@
+D:\source\bevy_schedule_dispatch\target\package\bevy_schedule_dispatch-0.1.0\target\debug\deps\thread_local-062e79fb1a632e69.rmeta: C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\lib.rs C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\cached.rs C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\thread_id.rs C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\unreachable.rs
+
+D:\source\bevy_schedule_dispatch\target\package\bevy_schedule_dispatch-0.1.0\target\debug\deps\libthread_local-062e79fb1a632e69.rlib: C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\lib.rs C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\cached.rs C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\thread_id.rs C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\unreachable.rs
+
+D:\source\bevy_schedule_dispatch\target\package\bevy_schedule_dispatch-0.1.0\target\debug\deps\thread_local-062e79fb1a632e69.d: C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\lib.rs C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\cached.rs C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\thread_id.rs C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\unreachable.rs
+
+C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\lib.rs:
+C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\cached.rs:
+C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\thread_id.rs:
+C:\Users\danki\.cargo\registry\src\index.crates.io-6f17d22bba15001f\thread_local-1.1.7\src\unreachable.rs:

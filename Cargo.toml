@@ -1,0 +1,19 @@
+[package]
+name = "bevy_schedule_dispatch"
+version = "0.1.0"
+authors = ["Mason Reed <msr@emesare.com>"]
+edition = "2021"
+readme = "README.md"
+keywords = ["bevy", "schedule", "dispatch"]
+description = "Use equivalent functions to dispatch bevy ecs schedules"
+repository = "https://github.com/emesare/binsig/"
+license = "MIT"
+
+[dependencies]
+paste = "1.0"
+bevy_ecs = "0.11"
+bevy_app = "0.11"
+bevy_utils = "0.11"
+
+[dev-dependencies]
+retour = { version = "0.3", features = ["static-detour"] }
