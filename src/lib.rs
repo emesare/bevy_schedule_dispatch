@@ -81,18 +81,6 @@ macro_rules! impl_dispatchable {
     };
 
     (@impl_all ($($nm:ident : $ty:ident),*)) => {
-        impl_dispatchable!(@impl_pair ($($nm : $ty),*) (                  fn($($ty),*) -> Ret));
-    };
-
-    (@impl_pair ($($nm:ident : $ty:ident),*) ($($fn_t:tt)*)) => {
-        impl_dispatchable!(@impl_fun ($($nm : $ty),*) ($($fn_t)*) (unsafe $($fn_t)*));
-    };
-
-    (@impl_fun ($($nm:ident : $ty:ident),*) ($safe_type:ty) ($unsafe_type:ty)) => {
-        impl_dispatchable!(@impl_core ($($nm : $ty),*) ($safe_type));
-    };
-
-    (@impl_core ($($nm:ident : $ty:ident),*) ($fn_type:ty)) => {
         ::paste::item! {
             #[derive(Debug)]
             pub struct [<DispIn $($ty)* >]<S, $($ty),*> {
@@ -112,12 +100,34 @@ macro_rules! impl_dispatchable {
                     }
                 }
             }
+        }
 
+        impl_dispatchable!(@impl_pair ($($nm : $ty),*) () (                                   fn($($ty),*) -> Ret));
+        impl_dispatchable!(@impl_pair ($($nm : $ty),*) (extern "cdecl")    (extern "cdecl"    fn($($ty),*) -> Ret));
+        impl_dispatchable!(@impl_pair ($($nm : $ty),*) (extern "stdcall")  (extern "stdcall"  fn($($ty),*) -> Ret));
+        impl_dispatchable!(@impl_pair ($($nm : $ty),*) (extern "fastcall") (extern "fastcall" fn($($ty),*) -> Ret));
+        impl_dispatchable!(@impl_pair ($($nm : $ty),*) (extern "win64")    (extern "win64"    fn($($ty),*) -> Ret));
+        impl_dispatchable!(@impl_pair ($($nm : $ty),*) (extern "C")        (extern "C"        fn($($ty),*) -> Ret));
+        impl_dispatchable!(@impl_pair ($($nm : $ty),*) (extern "system")   (extern "system"   fn($($ty),*) -> Ret));
+        //impl_dispatchable!(@impl_pair ($($nm : $ty),*) (extern "thiscall") (extern "thiscall" fn($($ty),*) -> Ret));
+    };
+
+    (@impl_pair ($($nm:ident : $ty:ident),*) ($($modifier:tt)*) ($($fn_t:tt)*)) => {
+        impl_dispatchable!(@impl_fun ($($nm : $ty),*) ($($modifier),*) ($($fn_t)*) (unsafe $($fn_t)*));
+    };
+
+    (@impl_fun ($($nm:ident : $ty:ident),*) ($($modifier:tt),*) ($safe_type:ty) ($unsafe_type:ty)) => {
+        impl_dispatchable!(@impl_core ($($nm : $ty),*) ($($modifier),*) ($safe_type));
+        impl_dispatchable!(@impl_core ($($nm : $ty),*) ($($modifier),*) ($unsafe_type));
+    };
+
+    (@impl_core ($($nm:ident : $ty:ident),*) ($($modifier:tt),*) ($fn_type:ty)) => {
+        ::paste::item! {
             impl<Ret: Copy + 'static + Default, $($ty: 'static + Copy + std::fmt::Debug ),*> Dispatchable for $fn_type {
                 type Func = $fn_type;
 
                 fn dispatcher<S: ScheduleLabel + Default + AsRef<(dyn ScheduleLabel + 'static)>>() -> Self::Func {
-                    |$($nm : $ty),*| -> Ret {
+                    $($modifier) * fn __disp<S: ScheduleLabel + Default + AsRef<(dyn ScheduleLabel + 'static)>, Ret: Copy + 'static + Default, $($ty: 'static + Copy + std::fmt::Debug ),*>($($nm : $ty),*) -> Ret {
                         let scoped_world = unsafe { GLOBAL_APP.get_mut().expect("GLOBAL_APP cell should NOT be empty").clone() };
                         let world = &mut scoped_world.lock().unwrap().world;
                         world.insert_non_send_resource([<DispIn $($ty)* >]::<S, $($ty),*>::new($($nm),*));
@@ -125,6 +135,7 @@ macro_rules! impl_dispatchable {
                         world.run_schedule(S::default());
                         world.get_non_send_resource::<DispOut<S, Ret>>().unwrap().ret
                     }
+                    __disp::<S, Ret, $($ty),*>
                 }
             }
         }
