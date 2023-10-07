@@ -62,7 +62,7 @@ impl<S: ScheduleLabel, Ret: 'static + FromWorld> DispOut<S, Ret> {
     }
 }
 
-pub trait Dispatchable: Sized + Copy + Sync + 'static {
+pub trait Dispatchable: Sized + Sync + 'static {
     type Func: FnPtr;
 
     fn dispatcher<S: ScheduleLabel + Default + AsRef<(dyn ScheduleLabel + 'static)>>() -> Self::Func;
@@ -90,7 +90,7 @@ macro_rules! impl_dispatchable {
                 )*
             }
 
-            impl<S: ScheduleLabel, $($ty: 'static + Copy + std::fmt::Debug ),*> [<DispIn $($ty)* >]<S, $($ty),*> {
+            impl<S: ScheduleLabel, $($ty: 'static + std::fmt::Debug ),*> [<DispIn $($ty)* >]<S, $($ty),*> {
                 pub fn new($($nm: $ty,)*) -> Self {
                     Self {
                         _marker: PhantomData,
@@ -123,11 +123,11 @@ macro_rules! impl_dispatchable {
 
     (@impl_core ($($nm:ident : $ty:ident),*) ($($modifier:tt),*) ($fn_type:ty)) => {
         ::paste::item! {
-            impl<Ret: Copy + 'static + Default, $($ty: 'static + Copy + std::fmt::Debug ),*> Dispatchable for $fn_type {
+            impl<Ret: Copy + 'static + Default, $($ty: 'static + std::fmt::Debug ),*> Dispatchable for $fn_type {
                 type Func = $fn_type;
 
                 fn dispatcher<S: ScheduleLabel + Default + AsRef<(dyn ScheduleLabel + 'static)>>() -> Self::Func {
-                    $($modifier) * fn __disp<S: ScheduleLabel + Default + AsRef<(dyn ScheduleLabel + 'static)>, Ret: Copy + 'static + Default, $($ty: 'static + Copy + std::fmt::Debug ),*>($($nm : $ty),*) -> Ret {
+                    $($modifier) * fn __disp<S: ScheduleLabel + Default + AsRef<(dyn ScheduleLabel + 'static)>, Ret: Copy + 'static + Default, $($ty: 'static + std::fmt::Debug ),*>($($nm : $ty),*) -> Ret {
                         let scoped_world = unsafe { GLOBAL_APP.get_mut().expect("GLOBAL_APP cell should NOT be empty").clone() };
                         let world = &mut scoped_world.lock().unwrap().world;
                         world.insert_non_send_resource([<DispIn $($ty)* >]::<S, $($ty),*>::new($($nm),*));
