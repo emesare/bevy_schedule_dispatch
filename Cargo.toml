@@ -6,7 +6,7 @@ edition = "2021"
 readme = "README.md"
 keywords = ["bevy", "schedule", "dispatch"]
 description = "Use equivalent functions to dispatch bevy ecs schedules"
-repository = "https://github.com/emesare/binsig/"
+repository = "https://github.com/emesare/bevy_schedule_dispatch/"
 license = "MIT"
 
 [dependencies]
