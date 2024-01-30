@@ -3,8 +3,10 @@
 use std::{
     cell::OnceCell,
     marker::{FnPtr, PhantomData},
-    sync::{Arc, Mutex},
+    sync::Arc,
 };
+// TODO: Add a feature flag for dis.
+use tracing_mutex::stdsync::Mutex;
 
 use bevy_app::prelude::*;
 use bevy_ecs::{prelude::*, schedule::ScheduleLabel};
@@ -22,12 +24,12 @@ pub mod prelude {
 
 // TODO: Safety docs.
 // TODO: Move this to the user...
-static mut GLOBAL_APP: OnceCell<Arc<Mutex<App>>> = OnceCell::new();
+pub static mut GLOBAL_APP: OnceCell<Arc<Mutex<App>>> = OnceCell::new();
 
 pub struct DispatchPlugin;
 
 impl DispatchPlugin {
-    #[must_use = "dispatchers will panic if GLOBAL_APP is empty"]
+    /// NOTE: Dispatchers will panic if GLOBAL_APP is empty
     pub fn globalize_app(app: App) -> Arc<Mutex<App>> {
         let arc_app = Arc::new(Mutex::new(app));
         unsafe {
@@ -82,6 +84,7 @@ macro_rules! impl_dispatchable {
 
     (@impl_all ($($nm:ident : $ty:ident),*)) => {
         ::paste::item! {
+            // TODO: Make tuple?
             #[derive(Debug)]
             pub struct [<DispIn $($ty)* >]<S, $($ty),*> {
                 _marker: PhantomData<S>,
@@ -128,8 +131,8 @@ macro_rules! impl_dispatchable {
 
                 fn dispatcher<S: ScheduleLabel + Default + AsRef<(dyn ScheduleLabel + 'static)>>() -> Self::Func {
                     $($modifier) * fn __disp<S: ScheduleLabel + Default + AsRef<(dyn ScheduleLabel + 'static)>, Ret: Copy + 'static + Default, $($ty: 'static + std::fmt::Debug ),*>($($nm : $ty),*) -> Ret {
-                        let scoped_world = unsafe { GLOBAL_APP.get_mut().expect("GLOBAL_APP cell should NOT be empty").clone() };
-                        let world = &mut scoped_world.lock().unwrap().world;
+                        let arc_app = unsafe { GLOBAL_APP.get().expect("GLOBAL_APP cell should NOT be empty").clone() };
+                        let world = &mut arc_app.lock().unwrap().world;
                         world.insert_non_send_resource([<DispIn $($ty)* >]::<S, $($ty),*>::new($($nm),*));
                         world.init_non_send_resource::<DispOut<S, Ret>>();
                         world.run_schedule(S::default());
